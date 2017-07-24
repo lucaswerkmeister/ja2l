@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   growPipe(STDIN_FILENO);
   growPipe(STDOUT_FILENO);
 
-  while ((read = getline(&line, &len, stdin)) != -1) {
+  while ((read = getline(&line, &len, input)) != -1) {
     line[read-2] = 0;
     printf("%s\n", line);
   }

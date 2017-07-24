@@ -1,9 +1,13 @@
+#include <errno.h>
+#include <error.h>
 #include <getopt.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "options.h"
 
 int exitAfterOptions = -1;
+FILE *input;
 
 void handleOptions(int argc, char *argv[]) {
   int c;
@@ -41,5 +45,25 @@ void handleOptions(int argc, char *argv[]) {
       exitAfterOptions = 1;
       break;
     }
+  }
+
+  if (optind < argc) {
+    if (argc == optind + 1) {
+      if (strcmp(argv[optind], "-") == 0) {
+        input = stdin;
+      } else {
+        input = fopen(argv[optind], "r");
+        if (input == NULL) {
+          error(0, errno, "fopen(%s)", argv[optind]);
+          exitAfterOptions = 1;
+        }
+      }
+    } else {
+      error(0, 0, "too many arguments");
+      fprintf(stderr, "Try ‘%s --help’ for more information.\n", argv[0]);
+      exitAfterOptions = 1;
+    }
+  } else {
+    input = stdin;
   }
 }
