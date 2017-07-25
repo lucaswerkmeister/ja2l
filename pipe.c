@@ -23,12 +23,19 @@ int pipeMaxSize(void) {
   pipeMaxSizeFile = fopen("/proc/sys/fs/pipe-max-size", "r");
   if (pipeMaxSizeFile == 0) {
     error(0, errno, "fopen(/proc/sys/fs/pipe-max-size)");
+    pipeMaxSize = 0;
     return 0;
   }
 
   size = getline(&lineptr, &n, pipeMaxSizeFile);
   if (size == -1) {
-    error(0, errno, "getline(/proc/sys/fs/pipe-max-size)");
+    if (errno != 0) {
+      error(0, errno, "getline(/proc/sys/fs/pipe-max-size)");
+    } else {
+      // file exists but is empty... weird but not a problem
+    }
+    pipeMaxSize = 0;
+    return 0;
   }
 
   pipeMaxSize = atoi(lineptr);
