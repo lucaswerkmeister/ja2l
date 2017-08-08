@@ -30,18 +30,18 @@ int main(int argc, char *argv[]) {
   read = getline(&line, &len, input);
   if (read == -1) {
     error(0, 0, "malformed input: empty");
-    return 1;
+    return EXIT_FAILURE;
   }
   if (strncmp("[\n", line, read+1) != 0) {
     error(0, 0, "malformed input: first line is not a single left bracket (‘[’)");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   // copy array element lines
   while ((read = getline(&line, &len, input)) != -1) {
     if (read < 2) {
       error(0, 0, "malformed input: input line too short");
-      return 1;
+      return EXIT_FAILURE;
     }
     if (line[read-2] == ',') {
       // normal line, trim trailing comma
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
         break;
       } else {
         error(0, 0, "malformed input: premature EOF");
-        return 1;
+        return EXIT_FAILURE;
       }
     }
   }
@@ -63,18 +63,18 @@ int main(int argc, char *argv[]) {
   read = getline(&line, &len, input);
   if (read == -1) {
     error(0, 0, "malformed input: final right bracket (‘]’) missing");
-    return 1;
+    return EXIT_FAILURE;
   }
   if (strncmp("]\n", line, read+1) != 0) {
     error(0, 0, "malformed input: last line is not a single right bracket (‘]‘)");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   read = getline(&line, &len, input);
   if (read != -1) {
     error(0, 0, "malformed input: extra input after end of array");
-    return 1;
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
