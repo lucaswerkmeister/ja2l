@@ -1,0 +1,20 @@
+#!/bin/bash
+
+function assertEquals {
+    if [[ "$1" != "$2" ]]; then
+        printf >&2 '%s: assertion failure\n' "${3:-(unknown function)}"
+        diff >&2 -u --label "expected" --label "actual" <(printf '%s' "$1") <(printf '%s' "$2")
+        exit 1
+    fi
+}
+
+function testSingleLine {
+    assertEquals $'{}' "$(printf '[\n{}\n]\n' | ./ja2l)" "$FUNCNAME"
+}
+
+function testMultiLine {
+    assertEquals $'{}\n{}' "$(printf '[\n{},\n{}\n]\n' | ./ja2l)" "$FUNCNAME"
+}
+
+testSingleLine
+testMultiLine
