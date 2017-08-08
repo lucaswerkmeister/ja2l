@@ -17,6 +17,7 @@ int main(int argc, char *argv[]) {
   _cleanup_free_ char *line = NULL;
   size_t len = 0;
   ssize_t read;
+  _cleanup_fclosev_ FILE **outputs = NULL;
 
   handleOptions(argc, argv);
   if (exitAfterOptions != -1) {
@@ -25,6 +26,9 @@ int main(int argc, char *argv[]) {
 
   growPipe(STDIN_FILENO);
   growPipe(STDOUT_FILENO);
+
+  outputs = calloc(2, sizeof (FILE *));
+  outputs[0] = stdout;
 
   // read and discard first line
   read = getline(&line, &len, input);
@@ -46,11 +50,11 @@ int main(int argc, char *argv[]) {
     if (line[read-2] == ',') {
       // normal line, trim trailing comma
       line[read-2] = 0;
-      printf("%s\n", line);
+      fprintf(outputs[0], "%s\n", line);
     } else {
       if (line[read-1] == '\n') {
         // last line of array
-        printf("%s", line);
+        fprintf(outputs[0], "%s", line);
         break;
       } else {
         error(0, 0, "malformed input: premature EOF");

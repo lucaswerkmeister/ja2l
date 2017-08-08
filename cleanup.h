@@ -22,3 +22,14 @@ static inline void fclosep(FILE **f) {
   }
 }
 #define _cleanup_fclose_ _cleanup_(fclosep)
+
+static inline void fclosepv(FILE ***f) {
+  if (*f) {
+    FILE **fv = *f;
+    while (*fv) {
+      fclosep(fv++);
+    }
+    free(*f);
+  }
+}
+#define _cleanup_fclosev_ _cleanup_(fclosepv)
