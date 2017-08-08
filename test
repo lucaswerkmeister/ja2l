@@ -21,11 +21,11 @@ function assertEquals {
 }
 
 function testSingleLine {
-    assertEquals $'{}' "$(printf '[\n{}\n]\n' | run)" "$FUNCNAME"
+    assertEquals $'{}' "$(printf '[\n{}\n]\n' | run)" "${FUNCNAME[0]}"
 }
 
 function testMultiLine {
-    assertEquals $'{}\n{}' "$(printf '[\n{},\n{}\n]\n' | run)" "$FUNCNAME"
+    assertEquals $'{}\n{}' "$(printf '[\n{},\n{}\n]\n' | run)" "${FUNCNAME[0]}"
 }
 
 testSingleLine
