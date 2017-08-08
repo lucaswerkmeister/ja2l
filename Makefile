@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean buildclean
 
 CFLAGS := -Wall -pedantic -O2
 LDFLAGS := -O2
@@ -10,5 +10,7 @@ ja2l.o: ja2l.c cleanup.h options.h pipe.h
 pipe.o: pipe.c cleanup.h
 options.o: options.c
 
-clean:
-	$(RM) ja2l *.o
+clean: buildclean
+	$(RM) ja2l
+buildclean:
+	$(RM) *.o
