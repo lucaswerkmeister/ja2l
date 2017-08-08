@@ -18,6 +18,10 @@ int main(int argc, char *argv[]) {
   size_t len = 0;
   ssize_t read;
   _cleanup_fclosev_ FILE **outputs = NULL;
+  // cleanup standard streams before exit
+  _cleanup_fclose_ FILE *_0 = stdin,
+    *_1 = stdout,
+    *_2 = stderr;
 
   handleOptions(argc, argv);
   if (exitAfterOptions != -1) {
