@@ -1,5 +1,17 @@
 #!/bin/bash
 
+function run {
+    valgrindlog=$(mktemp --tmpdir valgrind.log.XXXXXXXXXX)
+    valgrind --quiet --log-file="$valgrindlog" --error-exitcode=124 --leak-check=full --track-fds=yes ./ja2l
+    status=$?
+    sed -i '/FILE DESCRIPTORS: 1 open at exit./,+4 d' -- "$valgrindlog" # 1 is expected, the valgrind logfile fd
+    cat >&2 -- "$valgrindlog"
+    rm -f -- "$valgrindlog"
+    if ((status != 0)); then
+        exit 1
+    fi
+}
+
 function assertEquals {
     if [[ "$1" != "$2" ]]; then
         printf >&2 '%s: assertion failure\n' "${3:-(unknown function)}"
@@ -9,11 +21,11 @@ function assertEquals {
 }
 
 function testSingleLine {
-    assertEquals $'{}' "$(printf '[\n{}\n]\n' | ./ja2l)" "$FUNCNAME"
+    assertEquals $'{}' "$(printf '[\n{}\n]\n' | run)" "$FUNCNAME"
 }
 
 function testMultiLine {
-    assertEquals $'{}\n{}' "$(printf '[\n{},\n{}\n]\n' | ./ja2l)" "$FUNCNAME"
+    assertEquals $'{}\n{}' "$(printf '[\n{},\n{}\n]\n' | run)" "$FUNCNAME"
 }
 
 testSingleLine
