@@ -24,10 +24,7 @@ and can also be split up for parallelized processing.
 
 ## Project status
 
-Functional, but I plan to add [dgsh] support
-for efficient parallel processing of the JSON stream
-(slightly more efficient than piping into `dgsh-tee -s`).
-Tests, a manpage, etc. would also be nice.
+Functional, but more tests, a manpage, etc. would be nice.
 
 ## Build instructions
 
@@ -41,10 +38,82 @@ though I probably won’t refuse a pull request to add it.
 
 * glibc (`error`, `getopt_long`)
 * Linux (`/proc/sys/fs/pipe-max-size`, `fcntl(F_SETPIPE_SZ)`)
+* optional: [dgsh]
 
 The reason lists in parentheses are probably not exhaustive.
 (The most likely reason for that is that
 I’ll probably forget to update them as I update the program.)
+
+## dgsh support
+
+ja2l can be built with [dgsh] support.
+When used in a dgsh pipeline,
+it accepts zero or one inputs
+(depending on whether or not a file name was specified on the command line)
+and scatters the JSON values across any (nonzero) number of outputs.
+
+To build ja2l with dgsh support,
+add `-DUSE_DGSH` to the `CFLAGS`
+and `-ldgsh` to the `LDLIBS`,
+e. g. like this:
+
+```sh
+make CFLAGS=-DUSE_DGSH LDLIBS=-ldgsh clean all
+```
+
+This can be used to speed up processing of the JSON data with [jq],
+similar to this script:
+
+```sh
+function countElements {
+    jq -r '
+      .elements |
+      .[]
+    ' | awk '
+      {
+        a[$0]++
+      }
+      END {
+        for (k in a)
+          print a[k] "\t" k
+      }
+    '
+}
+
+function summarizeElements {
+    awk -F'\t' '
+      {
+        a[$2] += $1
+      }
+      END {
+          for (k in a)
+            if (a[k] >= 1000)
+              print a[k] "\t" k
+      }
+    ' |
+    sort -nr
+}
+
+ja2l | {{
+        countElements &
+        countElements &
+        countElements &
+        countElements &
+    }} |
+    cat |
+    summarizeElements
+```
+
+This prints the most common “elements” in the JSON input,
+parallelizing the extraction and counting of elements across four `countElements` invocations.
+The results of those invocations are then aggregated into a single result list again.
+If the processing is CPU-bound,
+`jq` is the expensive part,
+and you have four processors or processor cores (without counting hyper-threading),
+this should speed up processing by about a factor of four.
+
+Note that dgsh must be made aware that `ja2l` supports dgsh.
+See the workaround in [dspinellis/dgsh#87] for one way to do this.
 
 ## Attribution
 
@@ -62,3 +131,4 @@ the license mentioned above.
 
 [dgsh]: https://www.spinellis.gr/sw/dgsh/
 [jq]: https://stedolan.github.io/jq/
+[dspinellis/dgsh#87]: https://github.com/dspinellis/dgsh/issues/87
