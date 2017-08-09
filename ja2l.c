@@ -14,12 +14,17 @@
 #include "pipe.h"
 
 int main(int argc, char *argv[]) {
+  /* The current line, obtained via getline(3). */
   _cleanup_free_ char *line = NULL;
+  /* getline(3) argument (unused by us). */
   size_t len = 0;
+  /* Bytes read by getline(3) (including newline, excluding null byte). */
   ssize_t read;
+  /* null-terminated array of outputs. */
   _cleanup_fclosev_ FILE **outputs = NULL;
+  /* Pointer into outputs, pointing at the next output to be used. */
   FILE **output = NULL;
-  // cleanup standard streams before exit
+  /* Unused variables to clean up standard streams before exit. */
   _cleanup_fclose_ FILE *_0 = stdin,
     *_1 = stdout,
     *_2 = stderr;
@@ -55,6 +60,7 @@ int main(int argc, char *argv[]) {
       error(0, 0, "malformed input: input line too short");
       return EXIT_FAILURE;
     }
+
     if (line[read-2] == ',') {
       // normal line, trim trailing comma
       line[read-2] = 0;
@@ -69,6 +75,8 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
       }
     }
+
+    // advance to next output (circle back to first when last output is reached)
     if (!*++output) {
       output = &outputs[0];
     }
