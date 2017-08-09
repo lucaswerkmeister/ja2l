@@ -1,7 +1,9 @@
 .PHONY: all check clean buildclean
 
-CFLAGS := -Wall -pedantic -O2
+CFLAGS := -O2
 LDFLAGS := -O2
+
+override CFLAGS += -Wall -pedantic
 
 all: ja2l
 
