@@ -8,8 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#ifdef USE_DGSH
+#include <dgsh.h>
+#define EXIT_PROTOCOL 76
+#endif
 
 #include "cleanup.h"
+#include "myio.h"
 #include "options.h"
 #include "pipe.h"
 
@@ -30,14 +35,44 @@ int main(int argc, char *argv[]) {
   _cleanup_fclose_ FILE *_0 = stdin,
     *_1 = stdout,
     *_2 = stderr;
+#ifdef USE_DGSH
+  /* dgsh_negotiate(3) arguments. */
+  int n_input_fds, n_output_fds;
+  _cleanup_free_ int *input_fds = NULL, *output_fds = NULL;
+  /* Value returned by dgsh_negotiate(3). */
+  int negotiationResult;
+  /* Pointer into output_fds (cf. outputs and output). */
+  int *output_fd;
+#endif
 
   exitAfterOptions = handleOptions(argc, argv);
   if (exitAfterOptions != -1) {
     return exitAfterOptions;
   }
 
+#ifdef USE_DGSH
+  n_input_fds = input == stdin ? 1 : 0;
+  n_output_fds = -1; // arbitrary number of outputs
+  negotiationResult = dgsh_negotiate(0, argv[0],
+                                     &n_input_fds, &n_output_fds,
+                                     &input_fds, &output_fds);
+  if (negotiationResult == -1) {
+    return EXIT_PROTOCOL;
+  }
+  if (n_output_fds == 0) {
+    error(0, 0, "negotiation resulted in zero outputs, which does not make sense (try piping to cat)");
+    return EXIT_FAILURE;
+  }
+  outputs = calloc(n_output_fds + 1, sizeof (FILE *));
+  output = outputs;
+  output_fd = output_fds;
+  while (output_fd < output_fds + n_output_fds) {
+    *output++ = fdopenw(*output_fd++);
+  }
+#else
   outputs = calloc(2, sizeof (FILE *));
   outputs[0] = stdout;
+#endif
 
   growPipe(STDIN_FILENO);
   for (output = &outputs[0]; *output; output++) {
