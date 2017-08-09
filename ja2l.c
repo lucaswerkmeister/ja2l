@@ -14,6 +14,8 @@
 #include "pipe.h"
 
 int main(int argc, char *argv[]) {
+  /* Value returned by handleOptions(). */
+  int exitAfterOptions;
   /* The current line, obtained via getline(3). */
   _cleanup_free_ char *line = NULL;
   /* getline(3) argument (unused by us). */
@@ -29,7 +31,7 @@ int main(int argc, char *argv[]) {
     *_1 = stdout,
     *_2 = stderr;
 
-  handleOptions(argc, argv);
+  exitAfterOptions = handleOptions(argc, argv);
   if (exitAfterOptions != -1) {
     return exitAfterOptions;
   }
