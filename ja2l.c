@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
   size_t len = 0;
   ssize_t read;
   _cleanup_fclosev_ FILE **outputs = NULL;
+  FILE **output = NULL;
   // cleanup standard streams before exit
   _cleanup_fclose_ FILE *_0 = stdin,
     *_1 = stdout,
@@ -28,11 +29,14 @@ int main(int argc, char *argv[]) {
     return exitAfterOptions;
   }
 
-  growPipe(STDIN_FILENO);
-  growPipe(STDOUT_FILENO);
-
   outputs = calloc(2, sizeof (FILE *));
   outputs[0] = stdout;
+
+  growPipe(STDIN_FILENO);
+  for (output = &outputs[0]; *output; output++) {
+    growPipe(fileno(*output));
+  }
+  output = &outputs[0];
 
   // read and discard first line
   read = getline(&line, &len, input);
@@ -54,16 +58,19 @@ int main(int argc, char *argv[]) {
     if (line[read-2] == ',') {
       // normal line, trim trailing comma
       line[read-2] = 0;
-      fprintf(outputs[0], "%s\n", line);
+      fprintf(*output, "%s\n", line);
     } else {
       if (line[read-1] == '\n') {
         // last line of array
-        fprintf(outputs[0], "%s", line);
+        fprintf(*output, "%s", line);
         break;
       } else {
         error(0, 0, "malformed input: premature EOF");
         return EXIT_FAILURE;
       }
+    }
+    if (!*++output) {
+      output = &outputs[0];
     }
   }
 
