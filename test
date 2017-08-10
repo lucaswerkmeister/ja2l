@@ -2,7 +2,7 @@
 
 function run {
     valgrindlog=$(mktemp --tmpdir valgrind.log.XXXXXXXXXX)
-    valgrind --quiet --log-file="$valgrindlog" --error-exitcode=124 --leak-check=full --track-fds=yes ./ja2l
+    valgrind --quiet --log-file="$valgrindlog" --error-exitcode=124 --leak-check=full --track-fds=yes ./ja2l "$@"
     status=$?
     sed -i '/FILE DESCRIPTORS: 1 open at exit./,+4 d' -- "$valgrindlog" # 1 is expected, the valgrind logfile fd
     cat >&2 -- "$valgrindlog"
@@ -16,6 +16,13 @@ function assertEquals {
     if [[ "$1" != "$2" ]]; then
         printf >&2 '%s: assertion failure\n' "${3:-(unknown function)}"
         diff >&2 -u --label "expected" --label "actual" <(printf '%s' "$1") <(printf '%s' "$2")
+        exit 1
+    fi
+}
+
+function assertMatches {
+    if ! [[ "$2" =~ $1 ]]; then
+        printf >&2 '%s: assertion failure\nPattern: %s\nActual:\n%s\n' "${3:-(unknown function)}" "$1" "$2"
         exit 1
     fi
 }
@@ -38,5 +45,26 @@ function testMultiLine {
     assertEquals "$expected" "$actual" "${FUNCNAME[0]}"
 }
 
+function testHelp {
+    outputShort=$(run -h)
+    assertEquals 'exit code 0' "exit code $?" "${FUNCNAME[0]}"
+    outputLong=$(run --help)
+    assertEquals 'exit code 0' "exit code $?" "${FUNCNAME[0]}"
+    assertEquals "$outputShort" "$outputLong"
+    assertMatches '^Usage: ' "$outputShort" "${FUNCNAME[0]}"
+}
+
+function testVersion {
+    outputShort=$(run -v)
+    assertEquals 'exit code 0' "exit code $?" "${FUNCNAME[0]}"
+    outputLong=$(run --version)
+    assertEquals 'exit code 0' "exit code $?" "${FUNCNAME[0]}"
+    assertEquals "$outputShort" "$outputLong"
+    assertMatches '[[:digit:]]\.[[:digit:]]' "$outputShort" "${FUNCNAME[0]}"
+    assertMatches 'AGPL' "$outputShort" "${FUNCNAME[0]}"
+}
+
 testSingleLine
 testMultiLine
+testHelp
+testVersion
