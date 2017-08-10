@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
   if (strncmp("]\n", line, read+1) != 0) {
-    error(0, 0, "malformed input: last line is not a single right bracket (‘]‘)");
+    error(0, 0, "malformed input: last line is not a single right bracket (‘]’)");
     return EXIT_FAILURE;
   }
 
