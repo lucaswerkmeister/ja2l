@@ -1,5 +1,7 @@
 # ja2l
 
+[![Build Status](https://travis-ci.org/lucaswerkmeister/ja2l.svg?branch=master)](https://travis-ci.org/lucaswerkmeister/ja2l)
+
 JSON array to lines.
 Expects a JSON array like this on standard input:
 
