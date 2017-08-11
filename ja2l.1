@@ -1,0 +1,129 @@
+.TH JA2L 1 2017-08-10 "ja2l 0.1"
+
+.SH NAME
+ja2l \- JSON array to lines
+
+.SH SYNOPSIS
+.BR ja2l " [\fIoption\fR]... [\fIFILE\fR]"
+
+.SH DESCRIPTION
+.B ja2l
+converts a JSON array,
+with the surrounding
+.B [
+and
+.B ]
+and the array elements
+each on a separate line,
+to a stream of array elements.
+It is functionally equivalent to,
+but more efficient than
+the following pipeline:
+.IP
+head -n-1 | tail -n+2 | sed 's/,$//'
+
+.PP
+The JSON array is taken from
+.IR FILE ;
+if
+.I FILE
+is \*(lq\fB-\fR\*(rq or not specified,
+standard input is used.
+Specifying more than one
+.I FILE
+is not (yet?) supported.
+
+.SH OPTIONS
+.TP
+.BR -h ,\  --help
+Print help and exit.
+.TP
+.BR -v ,\  --version
+Print version information and exit.
+
+.SH DGSH SUPPORT
+.B ja2l
+can optionally be built with support for
+.BR dgsh (1).
+If dgsh support is enabled,
+.B ja2l
+accepts either zero or one inputs
+(depending on whether or not
+.I FILE
+was specified)
+and any nonzero number of outputs.
+The stream of output elements is then
+scattered across the output streams.
+In other words,
+it is functionally equivalent to,
+but slightly more efficient than
+piping into
+.BR "\%dgsh-tee\ -s" .
+
+.PP
+The intended use of this is
+to speed up processing of the JSON stream
+by duplicating the program connected to
+.BR ja2l ’s
+output (see
+.BR EXAMPLES
+for an example using
+.BR jq (1)).
+The pipeline should not depend
+on any particular order of the scattered output;
+currently, it is scattered in round-robin fashion,
+but a future version might attempt to prioritize
+emptier output pipes over fuller ones.
+
+.PP
+Note that
+.B dgsh
+needs to be made aware that
+.B ja2l
+supports dgsh negotiation.
+Currently, this requires placing
+.B ja2l
+inside the
+.B dgsh
+installation directory,
+or inside a path
+.BR \fI...\fB/build/libexec/dgsh/ .
+See issue dspinellis/dgsh#87 for more details.
+
+.SH EXIT STATUS
+.B ja2l
+exits zero on success
+and non-zero on errors.
+An error during dgsh negotiation
+results in
+.I EX_PROTOCOL
+(76);
+other error codes are not (yet?) specified,
+and nothing other than non-zeroness
+should be relied upon.
+
+.SH EXAMPLES
+.SS Count all labels in a JSON file
+.IP
+ja2l dump.json |
+    jq '.labels | length' |
+    awk '{total+=$0} END {print total}'
+.SS Same, showing progress information
+.IP
+pv dump.json |
+    ja2l |
+    jq '.labels | length' |
+    awk '{total+=$0} END {print total}'
+.SS Same, parallelized with dgsh
+.IP
+pv dump.json |
+    ja2l | {{
+        jq '.labels | length' &
+        jq '.labels | length' &
+    }} |
+    cat |
+    awk '{total+=$0} END {print total}'
+
+.SH SEE ALSO
+.BR jq (1),
+.BR dgsh (1)

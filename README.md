@@ -26,7 +26,7 @@ and can also be split up for parallelized processing.
 
 ## Project status
 
-Functional, but more tests, a manpage, etc. would be nice.
+Functional, but more tests, an `install` target, etc. would be nice.
 
 ## Build instructions
 
