@@ -26,15 +26,20 @@ and can also be split up for parallelized processing.
 
 ## Project status
 
-Functional, but more tests, an `install` target, etc. would be nice.
+Functional, but more tests and various other goodies would be nice.
 
 ## Build instructions
 
-`make`. Needs glibc.
+`make && sudo make install`. Needs glibc.
 I use `gcc`, but so far `clang` also seems to work.
 
-There’s no `make install` yet,
-though I probably won’t refuse a pull request to add it.
+The Makefile follows standard GNU conventions;
+for instance, packagers can use something like
+`make DESTDIR="$pkgdir" prefix=/usr install`.
+(Note that standard `$(bindir)`, `$(man1dir)`, etc. directories
+are expected to exist,
+because the GNU Make manual says to not use the nonstandard `mkdir -p`
+and I don’t know how to create the directories without it.)
 
 ## Requirements
 
@@ -121,6 +126,9 @@ See the workaround in [dspinellis/dgsh#87] for one way to do this.
 
 The `cleanup.h` header file is based on systemd header files,
 which are published under the LGPL2.1+.
+
+The install-related variables in the `Makefile` are copied from the GNU Make manual,
+which is published under the FDL1.3+.
 
 ## License
 
