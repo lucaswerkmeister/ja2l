@@ -1,0 +1,6 @@
+[Distribution]
+Distribution=debian
+Release=stretch
+
+[Packages]
+BuildPackages=libc-dev make gcc valgrind
