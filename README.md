@@ -119,9 +119,6 @@ If the processing is CPU-bound,
 and you have four processors or processor cores (without counting hyper-threading),
 this should speed up processing by about a factor of four.
 
-Note that dgsh must be made aware that `ja2l` supports dgsh.
-See the workaround in [dspinellis/dgsh#87] for one way to do this.
-
 ## Attribution
 
 The `cleanup.h` header file is based on systemd header files,
@@ -141,4 +138,3 @@ the license mentioned above.
 
 [dgsh]: https://www.spinellis.gr/sw/dgsh/
 [jq]: https://stedolan.github.io/jq/
-[dspinellis/dgsh#87]: https://github.com/dspinellis/dgsh/issues/87
