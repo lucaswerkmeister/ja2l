@@ -3,7 +3,7 @@
 CFLAGS := -O2
 LDFLAGS := -O2
 
-override CFLAGS += -Wall -pedantic
+override CFLAGS += -std=c11 -Wall -pedantic
 
 INSTALL := install
 INSTALL_PROGRAM := $(INSTALL)
