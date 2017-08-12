@@ -4,4 +4,4 @@ cd -- "$SRCDIR"
 make -j `nproc`
 make check
 mkdir -p ${DESTDIR:-}/usr/{bin,share/man/man1}
-make prefix=/usr install
+make install
