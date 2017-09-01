@@ -60,12 +60,12 @@ it accepts zero or one inputs
 and scatters the JSON values across any (nonzero) number of outputs.
 
 To build ja2l with dgsh support,
-add `-DUSE_DGSH` to the `CFLAGS`
+add `-DUSE_DGSH` to the `CPPFLAGS`
 and `-ldgsh` to the `LDLIBS`,
 e. g. like this:
 
 ```sh
-make CFLAGS=-DUSE_DGSH LDLIBS=-ldgsh clean all
+make CPPFLAGS=-DUSE_DGSH LDLIBS=-ldgsh clean all
 ```
 
 This can be used to speed up processing of the JSON data with [jq],
