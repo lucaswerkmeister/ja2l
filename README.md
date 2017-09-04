@@ -13,7 +13,7 @@ Expects a JSON array like this on standard input:
 ]
 ```
 
-and converts it into a stream of JSON values on standard output:
+and converts it into [Newline Delimited JSON](http://ndjson.org/) stream on standard output:
 
 ```json
 {"foo":"bar"}
