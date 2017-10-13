@@ -23,6 +23,10 @@ and converts it into a stream of JSON values on standard output:
 
 This stream is suitable for processing with [jq],
 and can also be split up for parallelized processing.
+(This format is also variously known as
+line delimited JSON (ldjson),
+[newline delimited JSON (ndjson)][ndjson],
+or [JSON lines (jsonl)][jsonl].)
 
 ## Project status
 
@@ -138,3 +142,5 @@ the license mentioned above.
 
 [dgsh]: https://www.spinellis.gr/sw/dgsh/
 [jq]: https://stedolan.github.io/jq/
+[ndjson]: http://ndjson.org/
+[jsonl]: http://jsonlines.org/
