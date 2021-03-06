@@ -1,0 +1,17 @@
+name: Test
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update APT
+        run: sudo apt-get -q update
+      - name: Install dependencies
+        run: sudo apt-get -q install gcc valgrind
+      - name: Build
+        run: make CFLAGS=-Werror all
+      - name: Test
+        run: make check
