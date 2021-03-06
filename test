@@ -27,6 +27,15 @@ function assertMatches {
     fi
 }
 
+function closeExtraFds {
+    for fd in /dev/fd/*; do
+        fd=${fd#/dev/fd/}
+        if ((fd > 2)); then
+            exec {fd}<&-
+        fi
+    done
+}
+
 function testSingleLine {
     expected='{}'
     actual=$(printf '[\n{}\n]\n' | run)
@@ -64,6 +73,7 @@ function testVersion {
     assertMatches 'AGPL' "$outputShort" "${FUNCNAME[0]}"
 }
 
+closeExtraFds
 testSingleLine
 testMultiLine
 testHelp
