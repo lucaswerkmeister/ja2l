@@ -1,7 +1,7 @@
 .PHONY: all check install install-strip uninstall clean buildclean
 
-CFLAGS := -O2
-LDFLAGS := -O2
+CFLAGS := -O2 -flto=auto
+LDFLAGS := -O2 -flto=auto
 
 override CFLAGS += -std=c11 -Wall -pedantic
 
