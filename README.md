@@ -34,8 +34,7 @@ Functional, but more tests and various other goodies would be nice.
 
 ## Build instructions
 
-`make && sudo make install`. Needs glibc.
-I use `gcc`, but so far `clang` also seems to work.
+`make && sudo make install`. Needs glibc and GCC.
 
 The Makefile follows standard GNU conventions;
 for instance, packagers can use something like
@@ -49,6 +48,7 @@ and I don’t know how to create the directories without it.)
 
 * glibc (`error`, `getopt_long`)
 * Linux (`/proc/sys/fs/pipe-max-size`, `fcntl(F_SETPIPE_SZ)`)
+* GCC (`-fanalyzer`; if you remove that from `CFLAGS`, it may or may not work)
 * optional: [dgsh]
 
 The reason lists in parentheses are probably not exhaustive.

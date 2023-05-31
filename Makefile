@@ -3,7 +3,7 @@
 CFLAGS := -O2 -flto=auto
 LDFLAGS := -O2 -flto=auto
 
-override CFLAGS += -std=c11 -Wall -pedantic
+override CFLAGS += -std=c11 -Wall -pedantic -fanalyzer
 
 INSTALL := install
 INSTALL_PROGRAM := $(INSTALL)

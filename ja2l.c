@@ -64,6 +64,10 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
   outputs = calloc(n_output_fds + 1, sizeof (FILE *));
+  if (!outputs) {
+    error(0, errno, "unable to allocate output fds");
+    return EXIT_FAILURE;
+  }
   output = outputs;
   output_fd = output_fds;
   while (output_fd < output_fds + n_output_fds) {
@@ -71,6 +75,10 @@ int main(int argc, char *argv[]) {
   }
 #else
   outputs = calloc(2, sizeof (FILE *));
+  if (!outputs) {
+    error(0, errno, "unable to allocate output fds");
+    return EXIT_FAILURE;
+  }
   outputs[0] = stdout;
 #endif
 
