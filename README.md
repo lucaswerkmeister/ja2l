@@ -48,7 +48,7 @@ and I don’t know how to create the directories without it.)
 
 * glibc (`error`, `getopt_long`)
 * Linux (`/proc/sys/fs/pipe-max-size`, `fcntl(F_SETPIPE_SZ)`)
-* GCC (`-fanalyzer`; if you remove that from `CFLAGS`, it may or may not work)
+* GCC (`-fanalyzer`; if you remove that from `CFLAGS`, clang may or may not work)
 * optional: [dgsh]
 
 The reason lists in parentheses are probably not exhaustive.
